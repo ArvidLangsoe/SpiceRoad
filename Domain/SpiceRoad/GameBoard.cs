@@ -25,17 +25,41 @@ namespace Domain.SpiceRoad
             FillTradeSelection();
         }
 
-        public void TradeCardWithPlayer(Player player, Guid cardId) {
+        public void TradeCardWithPlayer(Player player, Guid cardId, TradeOffer offer = null) {
             var trade = availableTrades.FirstOrDefault(x => x.Card.Id == cardId);
+            var tradeIndex = availableTrades.IndexOf(trade);
 
             if (trade == null) {
                 throw new NoEntityFoundWithIdException<Card>(cardId);
+            }
+
+            if (!IsValidTradeOffer(offer,tradeIndex))
+            {
+                throw new InvalidTradeOfferException(cardId,tradeIndex,offer?.Resources.Count);
             }
 
             availableTrades.Remove(trade);
             player.Hand.AddCard(trade.Card);
             FillTradeSelection();
         }
+
+        private bool IsValidTradeOffer(TradeOffer offer, int tradeIndex)
+        {
+            if (tradeIndex != 0 && offer == null)
+            {
+                return false;
+            }
+            if (offer!=null && tradeIndex !=offer.Resources.Count)
+            {
+                return false;
+
+            }
+
+            return true;
+
+
+        }
+
 
         private void FillTradeSelection() {
             try

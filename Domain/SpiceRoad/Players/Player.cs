@@ -22,8 +22,8 @@ namespace Domain.SpiceRoad.Players
             Hand.AddCards(discardedCards);
         }
 
-        public void BuyCard(Guid cardId) {
-            Game.TradeCardWithPlayer(this, cardId);
+        public void BuyCard(Guid cardId, TradeOffer tradeOffer=null) {
+            Game.TradeCardWithPlayer(this, cardId, offer: tradeOffer);
         }
 
         

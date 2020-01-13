@@ -3,6 +3,7 @@ using Domain.SpiceRoad.Cards;
 using Domain.SpiceRoad.Cards.PlayableCards;
 using Domain.SpiceRoad.Exceptions;
 using Domain.SpiceRoad.Players;
+using Domain.SpiceRoad.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace DomainTest.SpiceRoad
         }
 
         [Fact]
-        public void Given_Board_With_Insufficient_Cards_When_Player_Buys_Card_Then_Fewer_Available_Cards()
+        public void Given_Board_With_Insufficient_Cards_When_Player_Buys_First_Card_Then_Fewer_Available_Cards()
         {
             var generatedCards = 6;
             var expectedCardCount = generatedCards - 1;
@@ -52,6 +53,28 @@ namespace DomainTest.SpiceRoad
 
             var boughtCardId = Guid.NewGuid();
             Assert.Throws<NoEntityFoundWithIdException<Card>>(() => player.BuyCard(boughtCardId));
+        }
+
+
+        [Fact]
+        public void Given_Player_Buys_Cards_By_Id_When_Offer_Does_Not_Match_Then_InvalidTradeOfferException() {
+            var generatedCards = 10;
+            var testCards = StubCard.GenerateCards(generatedCards);
+            var board = new GameBoard(testCards);
+            var player = new Player(board);
+            var buyIndex = 3;
+            var boughtCardId = board.AvailableTrades.ElementAt(buyIndex).Card.Id;
+
+            Assert.Throws<InvalidTradeOfferException>(() => 
+                player.BuyCard(
+                    boughtCardId,
+                    new TradeOffer(
+                        Resource.Tumeric, 
+                        Resource.Cardemom
+                        )
+                    )
+            );
+
         }
 
     }
